@@ -24,6 +24,7 @@ public class CustomViewHolder extends RecyclerView.ViewHolder {
 
     public void bindItem(final ThreeHourWeather item) {
         tv_temp.setText(Double.toString(item.getList().get(0).getMain().getTemp()));
-        tv_time.setText(item.getList().get(0).getDtTxt());
+        tv_time.setText(Long.toString(item.getList().get(0).getDt()));
+        iv_image.setImageResource(R.drawable.a10d2x);
     }
 }

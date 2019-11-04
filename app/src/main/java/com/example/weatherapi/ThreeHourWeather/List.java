@@ -9,6 +9,9 @@ import com.google.gson.annotations.SerializedName;
 public class List implements Parcelable
 {
 
+    @SerializedName("dt")
+    @Expose
+    private Long dt;
     @SerializedName("main")
     @Expose
     private Main main;
@@ -40,6 +43,7 @@ public class List implements Parcelable
             ;
 
     protected List(Parcel in) {
+        this.dt = ((Long) in.readValue((Long.class.getClassLoader())));
         this.main = ((Main) in.readValue((Main.class.getClassLoader())));
         in.readList(this.weather, (com.example.weatherapi.CurrentWeatherClass.Weather.class.getClassLoader()));
         this.clouds = ((Clouds) in.readValue((Clouds.class.getClassLoader())));
@@ -48,6 +52,13 @@ public class List implements Parcelable
     }
 
     public List() {
+    }
+    public Long getDt() {
+        return dt;
+    }
+
+    public void setDt(Long dt) {
+        this.dt = dt;
     }
 
     public Main getMain() {
@@ -85,6 +96,7 @@ public class List implements Parcelable
 
 
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeValue(dt);
         dest.writeValue(main);
         dest.writeList(weather);
         dest.writeValue(clouds);
