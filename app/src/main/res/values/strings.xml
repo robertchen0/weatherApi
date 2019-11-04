@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">WeatherApi</string>
+    <string name="zip_code">Zip Code</string>
+    <string name="units">Units</string>
+</resources>
