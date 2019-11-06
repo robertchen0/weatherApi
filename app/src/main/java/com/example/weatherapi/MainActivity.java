@@ -53,11 +53,12 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onResponse(Call<ThreeHourWeather> call, Response<ThreeHourWeather> response) {
 
+            if(response.body() != null){
             ArrayList<List> data = (ArrayList) response.body().getList();
             adapter = new CustomAdapter(data);
             recyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this, 4));
             recyclerView.setAdapter(adapter);
-        }
+        }}
 
         @Override
         public void onFailure(Call<ThreeHourWeather> call, Throwable t) {
@@ -77,113 +78,113 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 tv_current_city.setText(response.body().getName());
                 tv_current_sky.setText(response.body().getWeather().get(0).getMain());
-            }
-            if (units.equals("Fahrenheit")) {
-                if (response.body().getMain().getTemp() < 60) {
-                    linearLayout.setBackgroundColor(Color.parseColor("#40d2ff"));
-                    tv_current_temp.setText(response.body().getMain().getTemp() + "°F");
-                }
-                if (response.body().getMain().getTemp() >= 60) {
-                    linearLayout.setBackgroundColor(Color.parseColor("#f59e42"));
-                    tv_current_temp.setText(response.body().getMain().getTemp() + "°F");
-                }
-            }
-            if (units.equals("Celsius")) {
-                if (response.body().getMain().getTemp() < 15.56) {
-                    linearLayout.setBackgroundColor(Color.parseColor("#40d2ff"));
-                    tv_current_temp.setText(response.body().getMain().getTemp() + "°C");
-                }
-                if (response.body().getMain().getTemp() >= 15.56) {
-                    linearLayout.setBackgroundColor(Color.parseColor("#f59e42"));
-                    tv_current_temp.setText(response.body().getMain().getTemp() + "°C");
-                }
-            }
-        }
-            @Override
-            public void onFailure (Call < WeatherItemDetails > call, Throwable t){
-                System.out.println(t.getMessage());
-                Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        }
 
-        ;
+                if (units.equals("Fahrenheit")) {
+                    if (response.body().getMain().getTemp() < 60) {
+                        linearLayout.setBackgroundColor(Color.parseColor("#40d2ff"));
+                        tv_current_temp.setText(response.body().getMain().getTemp() + "°F");
+                    }
+                    if (response.body().getMain().getTemp() >= 60) {
+                        linearLayout.setBackgroundColor(Color.parseColor("#f59e42"));
+                        tv_current_temp.setText(response.body().getMain().getTemp() + "°F");
+                    }
+                }
+                if (units.equals("Celsius")) {
+                    if (response.body().getMain().getTemp() < 15.56) {
+                        linearLayout.setBackgroundColor(Color.parseColor("#40d2ff"));
+                        tv_current_temp.setText(response.body().getMain().getTemp() + "°C");
+                    }
+                    if (response.body().getMain().getTemp() >= 15.56) {
+                        linearLayout.setBackgroundColor(Color.parseColor("#f59e42"));
+                        tv_current_temp.setText(response.body().getMain().getTemp() + "°C");
+                    }
+                }
+            }
+        }
 
         @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_main);
-
-            sharedPreferences = getSharedPreferences("MyPref", MODE_PRIVATE);
-
-            if (sharedPreferences.getString("zip", null) == null) {
-                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-            } else {
-                sharedPreferences.getString("zip", null);
-                sharedPreferences.getString("unit", null);
-
-                tv_current_city = findViewById(R.id.tv_current_city);
-                tv_current_temp = findViewById(R.id.tv_current_temp);
-                tv_current_sky = findViewById(R.id.tv_current_sky);
-                linearLayout = findViewById(R.id.current_weather);
-                recyclerView = findViewById(R.id.recycler_view);
-
-                floatingActionButton = findViewById(R.id.floating_action_btn);
-                floatingActionButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-                    }
-                });
-                initNetworkCall();
-                initNetworkCallThreeHour();
-            }
+        public void onFailure(Call<WeatherItemDetails> call, Throwable t) {
+            System.out.println(t.getMessage());
+            Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
         }
+    };
 
-        public void initNetworkCall() {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-            units = sharedPreferences.getString("unit", null);
-            zip = sharedPreferences.getString("zip", null);
+        sharedPreferences = getSharedPreferences("MyPref", MODE_PRIVATE);
 
-            if (units.equals("Fahrenheit")) {
-                unit = "imperial";
-            }
-            if (units.equals("Celsius")) {
-                unit = "metric";
-            }
+        if (sharedPreferences.getString("zip", null) == null) {
+            startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+        } else {
+            sharedPreferences.getString("zip", null);
+            sharedPreferences.getString("unit", null);
 
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("https://api.openweathermap.org/")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-            WeatherApi weatherAPi = retrofit.create(WeatherApi.class);
-            weatherAPi.getCurrentWeather(
-                    zip,
-                    unit,
-                    api_key)
-                    .enqueue(callback);
-        }
+            tv_current_city = findViewById(R.id.tv_current_city);
+            tv_current_temp = findViewById(R.id.tv_current_temp);
+            tv_current_sky = findViewById(R.id.tv_current_sky);
+            linearLayout = findViewById(R.id.current_weather);
+            recyclerView = findViewById(R.id.recycler_view);
 
-        public void initNetworkCallThreeHour() {
-
-            units = sharedPreferences.getString("unit", null);
-            zip = sharedPreferences.getString("zip", null);
-
-            if (units.equals("Fahrenheit")) {
-                unit = "imperial";
-            }
-            if (units.equals("Celsius")) {
-                unit = "metric";
-            }
-
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("https://api.openweathermap.org/")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-            WeatherApi weatherAPi = retrofit.create(WeatherApi.class);
-            weatherAPi.getThreeHourWeather(
-                    zip,
-                    unit,
-                    api_key)
-                    .enqueue(callback1);
+            floatingActionButton = findViewById(R.id.floating_action_btn);
+            floatingActionButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                }
+            });
+            initNetworkCall();
+            initNetworkCallThreeHour();
         }
     }
+
+    public void initNetworkCall() {
+
+        units = sharedPreferences.getString("unit", null);
+        zip = sharedPreferences.getString("zip", null);
+
+        if (units.equals("Fahrenheit")) {
+            unit = "imperial";
+        }
+        if (units.equals("Celsius")) {
+            unit = "metric";
+        }
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://api.openweathermap.org/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        WeatherApi weatherAPi = retrofit.create(WeatherApi.class);
+        weatherAPi.getCurrentWeather(
+                zip,
+                unit,
+                api_key)
+                .enqueue(callback);
+    }
+
+    public void initNetworkCallThreeHour() {
+
+        units = sharedPreferences.getString("unit", null);
+        zip = sharedPreferences.getString("zip", null);
+
+        if (units.equals("Fahrenheit")) {
+            unit = "imperial";
+        }
+        if (units.equals("Celsius")) {
+            unit = "metric";
+        }
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://api.openweathermap.org/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        WeatherApi weatherAPi = retrofit.create(WeatherApi.class);
+        weatherAPi.getThreeHourWeather(
+                zip,
+                unit,
+                api_key)
+                .enqueue(callback1);
+    }
+}
